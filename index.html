@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PPTX Audio Extractor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+<h2>Extract audio from PPTX</h2>
+<input type="file" id="file">
+<div id="result"></div>
+
+<script>
+document.getElementById("file").addEventListener("change", async function(e){
+    const file = e.target.files[0]
+    const zip = await JSZip.loadAsync(file)
+    const result = document.getElementById("result")
+    result.innerHTML = ""
+
+    Object.keys(zip.files).forEach(async function(filename){
+        if(filename.startsWith("ppt/media/")){
+            const blob = await zip.files[filename].async("blob")
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = filename.split("/").pop()
+            a.innerText = "Download " + a.download
+            result.appendChild(a)
+            result.appendChild(document.createElement("br"))
+        }
+    })
+})
+</script>
+
+</body>
+</html>
